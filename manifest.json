@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Mem Extension",
+  "description": "Save your favorite websites to Mem",
+  "version": "1.0",
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": "assets/mem-logo.png"
+  }
+}
