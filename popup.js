@@ -1,7 +1,9 @@
 // const API_KEY = "6c0c051a-3663-48e6-8619-f761922a82a4";
 const API_URL = "https://api.mem.ai/v0/mems";
+const form = document.getElementById("form");
+const apiKeyInputField = document.getElementById("apikey");
 
-async function saveWebsite(title, url) {
+async function saveWebsite(title, url, apiKey) {
   // Authorization: ApiAccessToken <Replace this with your access token>
   // const content = {
   //   content: `Title: ${title}, Url: ${url}`,
@@ -17,13 +19,31 @@ async function saveWebsite(title, url) {
     cache: "no-cache",
     headers: {
       Accept: "application/json",
-      Authorization: `ApiAccessToken ${API_KEY}`,
+      Authorization: `ApiAccessToken ${apiKey}`,
     },
     body: JSON.stringify(content),
   });
 
   const result = await response.json();
-  console.log(result, "result");
+  return result;
+}
+
+async function saveNotes(memId, notes, apiKey) {
+  // ${API_URL}/${memId}/append
+  console.log(apiKey, "apiKey");
+  const response = await fetch(`https://api.mem.ai/v0/mems/${memId}/append`, {
+    method: "POST",
+    mode: "cors",
+    cache: "no-cache",
+    headers: {
+      Accept: "application/json",
+      Authorization: `ApiAccessToken ${apiKey}`,
+    },
+    body: JSON.stringify({ content: notes }),
+  });
+
+  const result = await response.json();
+  return result;
 }
 
 // Retrieve the API key using async/await
@@ -61,7 +81,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
   var activeTab = tabs[0];
   var title = activeTab.title;
   var url = activeTab.url;
-  const form = document.getElementById("form");
 
   console.log("Title:", title);
   console.log("URL:", url);
@@ -70,19 +89,33 @@ chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
   // Call the function to get the API key
   const API_KEY = await getApiKey();
   console.log(API_KEY, "api key in the query function");
+  let memData;
+  // Hide API Input Field if user already has API Key stored in chrome storage
+  // Display a button to update API Key field
 
   if (API_KEY) {
-    form.append(updateApiKeyButton());
+    memData = await saveWebsite(
+      title,
+      url,
+      "6c0c051a-3663-48e6-8619-f761922a82a4"
+    );
+    console.log(memData, "result");
+    form.prepend(updateApiKeyButton());
+    apiKeyInputField.style.display = "none";
   }
-  // await saveWebsite(title, url);
-  form.addEventListener("submit", function (e) {
+
+  form.addEventListener("submit", async function (e) {
     e.preventDefault();
     console.log("anybody here");
     let name = document.getElementById("apikey").value;
     let body = document.getElementById("notes").value;
+    console.log(body, "body");
 
+    console.log(memData.id, "memData");
     console.log(name, "name");
     console.log(body, "body");
+    console.log(API_KEY, "api key here?");
+    await saveNotes(memData.id, body, "6c0c051a-3663-48e6-8619-f761922a82a4");
     // fetch("https://jsonplaceholder.typicode.com/posts", {
     //   method: "POST",
     //   body: JSON.stringify({
