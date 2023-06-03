@@ -4,4 +4,5 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
   var url = activeTab.url;
   console.log("Title:", title);
   console.log("URL:", url);
+  console.log("wtf");
 });

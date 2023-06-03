@@ -1,15 +1,26 @@
-<link href="popup.css" rel="stylesheet" type="text/css" />
-<script type="module" src="popup.js"></script>
+<html>
+<head>
+  <link href="popup.css" rel="stylesheet" type="text/css" />
+  <script type="module" src="popup.js"></script>
+</head>
+<body>
+  <div class="title">Mem</div>
+  <form id="form" method="post">
+      <input type="text", id="apikey" placeholder="API Key" class="api-key-input"/></br>
+      <input type="text", id="notes" placeholder="Notes"/></br>
+      <input type="submit" value="Submit"/>
+   </form>
+   <div>
+   <h3>The Following data is successfuly posted</h3>
+   <h4 id="title"></h4>
+   <h5 id="bd"></h5>
+   </div>
+</body>
+</html>
+<!-- <div class="container">
 
-<div class="container">
-  <div>
-    <div class="title">Mem</div>
 
     <div class="bookmarks" id="bookmarks">
-      <div class="row">
-        <p>Tags</p>
-        <input type="text" name="tags" />
-      </div>
       <div class="row">
         <p>Notes</p>
         <input type="text" name="notes" />
@@ -20,4 +31,4 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->

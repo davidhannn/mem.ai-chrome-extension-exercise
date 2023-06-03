@@ -1,30 +1,3 @@
-const API_KEY = "6c0c051a-3663-48e6-8619-f761922a82a4";
-const API_URL = "https://api.mem.ai/v0/mems";
-
-async function saveWebsite(title, url) {
-  // Authorization: ApiAccessToken <Replace this with your access token>
-  const content = {
-    content: `Title: ${title}, Url: ${url}`,
-    isRead: true,
-    isArchived: true,
-    scheduledFor: "2032-08-02T08:15:30-05:00",
-  };
-
-  const response = await fetch(API_URL, {
-    method: "POST",
-    mode: "cors",
-    cache: "no-cache",
-    headers: {
-      Accept: "application/json",
-      Authorization: `ApiAccessToken ${API_KEY}`,
-    },
-    body: JSON.stringify(content),
-  });
-
-  const result = await response.json();
-  console.log(result, "result");
-}
-
 chrome.runtime.onInstalled.addListener(() => {
   chrome.action.setBadgeText({
     text: "OFF",
@@ -77,3 +50,15 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     });
   }
 });
+
+// Listen for changes in Chrome storage
+// chrome.storage.onChanged.addListener(function (changes, namespace) {
+//   for (var key in changes) {
+//     if (key === "apiKey") {
+//       var newValue = changes[key].newValue;
+//       // Store the API key value in a variable or send a message to the popup
+//       // You can use chrome.runtime.sendMessage to send the API key to the popup script
+//       chrome.runtime.sendMessage({ apiKey: newValue });
+//     }
+//   }
+// });
