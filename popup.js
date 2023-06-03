@@ -3,12 +3,13 @@ const API_URL = "https://api.mem.ai/v0/mems";
 
 async function saveWebsite(title, url) {
   // Authorization: ApiAccessToken <Replace this with your access token>
-  const content = {
-    content: `Title: ${title}, Url: ${url}`,
-    isRead: true,
-    isArchived: true,
-    scheduledFor: "2032-08-02T08:15:30-05:00",
-  };
+  // const content = {
+  //   content: `Title: ${title}, Url: ${url}`,
+  //   isRead: true,
+  //   isArchived: true,
+  //   scheduledFor: "2032-08-02T08:15:30-05:00",
+  // };
+  const content = `Title: ${title}, URL: ${url}`;
 
   const response = await fetch(API_URL, {
     method: "POST",
