@@ -8,8 +8,9 @@ Your task is to build a Chrome extension for Mem that allows users to save a web
 
 1. User can save website title and URL by clicking on Chrome Extension
 2. User can also add notes to the saved mem in markdown format
-3. User can update the API Key to send request
-4. User can use a shortcut (CMD + B for iOS) to call extension
+3. User's API Key is saved in chrome storage once it successfully saves a note in Mem
+4. User can update the API Key
+5. User can use a shortcut (CMD + B for iOS) to call extension
 
 # Issues
 

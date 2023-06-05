@@ -33,9 +33,7 @@ async function saveWebsite(title, url, apiKey) {
       },
       body: JSON.stringify(content),
     });
-  } catch (error) {
-    console.log(error, "error");
-  }
+  } catch (error) {}
 
   if (response?.ok) {
     return response.json();
@@ -46,19 +44,27 @@ async function saveWebsite(title, url, apiKey) {
 
 async function saveNotes(memId, notes, apiKey) {
   console.log(apiKey, "apiKey");
-  const response = await fetch(`https://api.mem.ai/v0/mems/${memId}/append`, {
-    method: "POST",
-    mode: "cors",
-    cache: "no-cache",
-    headers: {
-      Accept: "application/json",
-      Authorization: `ApiAccessToken ${apiKey}`,
-    },
-    body: notes,
-  });
+  let response;
+  try {
+    response = await fetch(`https://api.mem.ai/v0/mems/${memId}/append`, {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      headers: {
+        Accept: "application/json",
+        Authorization: `ApiAccessToken ${apiKey}`,
+      },
+      body: notes,
+    });
+  } catch (error) {
+    console.log(error, "error");
+  }
 
-  const result = await response.json();
-  return result;
+  if (response?.ok) {
+    return response.json();
+  } else {
+    throw new Error("Website was not saved properly");
+  }
 }
 
 // Retrieve the API key using async/await
@@ -97,10 +103,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
   var title = activeTab.title;
   var url = activeTab.url;
 
-  console.log("Title:", title);
-  console.log("URL:", url);
-  console.log("TESTING PLEASE");
-
   // Call the function to get the API key
   const API_KEY = await getApiKey();
   console.log(API_KEY, "api key in the query function");
@@ -112,11 +114,8 @@ chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
   if (API_KEY) {
     memData = await saveWebsite(title, url, API_KEY);
     displayNotesForm();
-    // form.prepend(updateApiKeyButton());
-    // apiKeyInputField.style.display = "none";
   } else {
     displayApiKeyForm();
-    // notesInputField.style.display = "none";
   }
 
   apiKeyForm.addEventListener("submit", async function (e) {
@@ -135,16 +134,19 @@ chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
 
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
-    // let name = document.getElementById("apikey").value;
     const API_KEY = await getApiKey();
-    let body = document.getElementById("notes").value;
 
-    await saveNotes(memData.id, body, API_KEY);
+    try {
+      await saveNotes(memData.id, notesInputField.value, API_KEY);
+      notesInputField.value = "";
+    } catch (error) {
+      alert("There was an issue with the API Key. Please try again.");
+      throw Error(error, "error here");
+    }
   });
 
   apiKeyButton.addEventListener("click", (e) => {
     e.preventDefault();
-    console.log("here??");
     displayApiKeyForm();
   });
 });
