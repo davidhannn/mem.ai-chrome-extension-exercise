@@ -1,24 +1,47 @@
 // const API_KEY = "6c0c051a-3663-48e6-8619-f761922a82a4";
 const API_URL = "https://api.mem.ai/v0/mems";
 const form = document.getElementById("form");
+const apiKeyForm = document.getElementById("api-key-form");
 const apiKeyInputField = document.getElementById("apikey");
+const notesInputField = document.getElementById("notes");
+const apiForm = document.getElementById("api-form");
+const notesForm = document.getElementById("notes-form");
+const apiKeyButton = document.getElementById("update-api-key-button");
+
+const displayNotesForm = () => {
+  notesForm.style.display = "block";
+  apiForm.style.display = "none";
+};
+
+const displayApiKeyForm = () => {
+  notesForm.style.display = "none";
+  apiForm.style.display = "block";
+};
 
 async function saveWebsite(title, url, apiKey) {
   const content = `Title: ${title}, URL: ${url}`;
 
-  const response = await fetch(API_URL, {
-    method: "POST",
-    mode: "cors",
-    cache: "no-cache",
-    headers: {
-      Accept: "application/json",
-      Authorization: `ApiAccessToken ${apiKey}`,
-    },
-    body: JSON.stringify(content),
-  });
+  let response;
+  try {
+    response = await fetch(API_URL, {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      headers: {
+        Accept: "application/json",
+        Authorization: `ApiAccessToken ${apiKey}`,
+      },
+      body: JSON.stringify(content),
+    });
+  } catch (error) {
+    console.log(error, "error");
+  }
 
-  const result = await response.json();
-  return result;
+  if (response?.ok) {
+    return response.json();
+  } else {
+    throw new Error("Website was not saved properly");
+  }
 }
 
 async function saveNotes(memId, notes, apiKey) {
@@ -82,72 +105,46 @@ chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
   const API_KEY = await getApiKey();
   console.log(API_KEY, "api key in the query function");
   let memData;
+
   // Hide API Input Field if user already has API Key stored in chrome storage
   // Display a button to update API Key field
-
+  // Save website and URL to Notes
   if (API_KEY) {
-    memData = await saveWebsite(
-      title,
-      url,
-      "6c0c051a-3663-48e6-8619-f761922a82a4"
-    );
-    console.log(memData, "result");
-    form.prepend(updateApiKeyButton());
-    apiKeyInputField.style.display = "none";
+    memData = await saveWebsite(title, url, API_KEY);
+    displayNotesForm();
+    // form.prepend(updateApiKeyButton());
+    // apiKeyInputField.style.display = "none";
+  } else {
+    displayApiKeyForm();
+    // notesInputField.style.display = "none";
   }
+
+  apiKeyForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    let apiKeyId = document.getElementById("apikey").value;
+
+    try {
+      memData = await saveWebsite(title, url, apiKeyId);
+      await saveApiKey(apiKeyId);
+      displayNotesForm();
+    } catch (error) {
+      alert("There was an issue with the API Key. Please try again.");
+      throw Error(error, "error here");
+    }
+  });
 
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
-    console.log("anybody here");
-    let name = document.getElementById("apikey").value;
+    // let name = document.getElementById("apikey").value;
+    const API_KEY = await getApiKey();
     let body = document.getElementById("notes").value;
-    console.log(body, "body");
 
-    console.log(memData.id, "memData");
-    console.log(name, "name");
-    console.log(body, "body");
-    console.log(API_KEY, "api key here?");
-    await saveNotes(memData.id, body, "6c0c051a-3663-48e6-8619-f761922a82a4");
-    // fetch("https://jsonplaceholder.typicode.com/posts", {
-    //   method: "POST",
-    //   body: JSON.stringify({
-    //     title: name,
-    //     body: body,
-    //   }),
-    //   headers: {
-    //     "Content-type": "application/json; charset=UTF-8",
-    //   },
-    // })
-    //   .then(function (response) {
-    //     return response.json();
-    //   })
-    //   .then(function (data) {
-    //     console.log(data);
-    //     title = document.getElementById("title");
-    //     body = document.getElementById("bd");
-    //     title.innerHTML = data.title;
-    //     body.innerHTML = data.body;
-    //   })
-    //   .catch((error) => console.error("Error:", error));
+    await saveNotes(memData.id, body, API_KEY);
+  });
+
+  apiKeyButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    console.log("here??");
+    displayApiKeyForm();
   });
 });
-
-const updateApiKeyButton = () => {
-  const apiKeyButton = document.createElement("button");
-  apiKeyButton.textContent = "Update API Key";
-  apiKeyButton.type = "button";
-
-  return apiKeyButton;
-};
-
-// chrome.runtime.sendMessage({ getApiKey: true }, function (response) {
-//   console.log(response, "response");
-//   if (response && response.apiKey) {
-//     var apiKey = response.apiKey;
-//     // Use the API key in your popup script
-//     console.log(apiKey, "what!");
-//   } else {
-//     console.log("apikey not available");
-//     // Handle the case when the API key is not available
-//   }
-// });

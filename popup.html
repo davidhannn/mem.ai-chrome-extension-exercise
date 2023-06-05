@@ -5,11 +5,21 @@
 </head>
 <body>
   <div class="title">Mem</div>
-  <form id="form" method="post">
+
+  <div id="api-form" class="api-form">
+    <form id="api-key-form" method="post" >
       <input type="text", id="apikey" placeholder="API Key" class="api-key-input"/></br>
-      <textarea type="text", id="notes" rows="5" placeholder="Notes" class="notes"></textarea>
-      <input type="submit" value="Submit" class="submit"/>
-   </form>
+      <input type="submit" value="Update Key" class="api-key-submit" />
+    </form>
+  </div>
+
+  <div id="notes-form" class="notes-form">
+    <button type="button" id="update-api-key-button">Update API Key</button>
+    <form id="form" method="post">
+        <textarea type="text", id="notes" rows="5" placeholder="Notes" class="notes"></textarea>
+        <input type="submit" value="Submit" class="submit"/>
+    </form>
+  </div>
 
 </body>
 </html>
