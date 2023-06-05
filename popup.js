@@ -4,13 +4,6 @@ const form = document.getElementById("form");
 const apiKeyInputField = document.getElementById("apikey");
 
 async function saveWebsite(title, url, apiKey) {
-  // Authorization: ApiAccessToken <Replace this with your access token>
-  // const content = {
-  //   content: `Title: ${title}, Url: ${url}`,
-  //   isRead: true,
-  //   isArchived: true,
-  //   scheduledFor: "2032-08-02T08:15:30-05:00",
-  // };
   const content = `Title: ${title}, URL: ${url}`;
 
   const response = await fetch(API_URL, {
@@ -29,7 +22,6 @@ async function saveWebsite(title, url, apiKey) {
 }
 
 async function saveNotes(memId, notes, apiKey) {
-  // ${API_URL}/${memId}/append
   console.log(apiKey, "apiKey");
   const response = await fetch(`https://api.mem.ai/v0/mems/${memId}/append`, {
     method: "POST",
@@ -39,7 +31,7 @@ async function saveNotes(memId, notes, apiKey) {
       Accept: "application/json",
       Authorization: `ApiAccessToken ${apiKey}`,
     },
-    body: JSON.stringify({ content: notes }),
+    body: notes,
   });
 
   const result = await response.json();
