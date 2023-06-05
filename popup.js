@@ -1,4 +1,3 @@
-// const API_KEY = "6c0c051a-3663-48e6-8619-f761922a82a4";
 const API_URL = "https://api.mem.ai/v0/mems";
 const form = document.getElementById("form");
 const apiKeyForm = document.getElementById("api-key-form");
@@ -84,19 +83,12 @@ function saveApiKey(apiKey) {
   });
 }
 
-// // Remove the item from storage
-// function removeItemFromStorage(itemKey) {
-//   chrome.storage.local.remove(itemKey, function () {
-//     console.log("Item removed from storage.");
-//   });
-// }
-
-// var itemKey = "apiKey";
-// removeItemFromStorage(itemKey);
-
-// Call the function to save the API key
-// var myApiKey = "YOUR_API_KEY";
-// saveApiKey(myApiKey);
+function updateBadge() {
+  chrome.runtime.sendMessage({ message: "True" }, function (response) {
+    // Handle the response from the background script, if any
+    console.log("Response from background script:", response);
+  });
+}
 
 chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
   var activeTab = tabs[0];
@@ -105,7 +97,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
 
   // Call the function to get the API key
   const API_KEY = await getApiKey();
-  console.log(API_KEY, "api key in the query function");
   let memData;
 
   // Hide API Input Field if user already has API Key stored in chrome storage
@@ -113,6 +104,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
   // Save website and URL to Notes
   if (API_KEY) {
     memData = await saveWebsite(title, url, API_KEY);
+    updateBadge();
     displayNotesForm();
   } else {
     displayApiKeyForm();
@@ -150,3 +142,17 @@ chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
     displayApiKeyForm();
   });
 });
+
+// // Remove the item from storage
+// function removeItemFromStorage(itemKey) {
+//   chrome.storage.local.remove(itemKey, function () {
+//     console.log("Item removed from storage.");
+//   });
+// }
+
+// var itemKey = "apiKey";
+// removeItemFromStorage(itemKey);
+
+// Call the function to save the API key
+// var myApiKey = "YOUR_API_KEY";
+// saveApiKey(myApiKey);
